@@ -1,0 +1,10 @@
+Ver1.2 2020/9/21
+  CreateGameObjectでSecneBaseを渡すようにしました。
+　GameObjectManagerを廃止し、SceneBaseの中に直接書きました。
+
+Ver1.1 2020/2/29
+  FindGameObject()を呼ぶとき、sceneBase.hをインクルードしなくてもいいよう、
+  GameObject周りのincludeを見直しました。
+
+Ver1.0 2020/2/25
+  プロジェクトを、フレームのみ、実装例をリリースしました。

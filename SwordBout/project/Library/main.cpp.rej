@@ -1,0 +1,9 @@
+diff a/project/Library/main.cpp b/project/Library/main.cpp	(rejected hunks)
+@@ -61,6 +61,7 @@
+ 
+ 		ClearDrawScreen();
+ 		AppDraw();
++
+ 		ImGui::EndFrame();
+ 		ImGui::Render();
+ 

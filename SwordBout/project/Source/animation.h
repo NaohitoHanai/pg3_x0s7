@@ -1,13 +1,12 @@
 #pragma once
 // animation.h
-#include "component.h"
 
-class Animation : public Component {
+class Animation
+{
 public:
 	Animation();
-	Animation(GameObject* parent);
 	~Animation();
-	void Update() override;
+	void Update();
 	void SetModel(int model);
 	void Play(int animModel, bool loop=true);
 	float GetCurrentFrame() {return frame;}

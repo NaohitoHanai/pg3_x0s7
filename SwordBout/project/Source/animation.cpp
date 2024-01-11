@@ -7,12 +7,6 @@ Animation::Animation()
 	frameSpeed = 0.5f;
 }
 
-Animation::Animation(GameObject* parent)
-{
-	attachIndex = -1;
-	frameSpeed = 0.5f;
-}
-
 Animation::~Animation()
 {
 	if (attachIndex >= 0)

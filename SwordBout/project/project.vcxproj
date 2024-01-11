@@ -152,9 +152,11 @@
     <ClInclude Include="Library\SceneBase.h" />
     <ClInclude Include="Library\SceneManager.h" />
     <ClInclude Include="Library\Time.h" />
+    <ClInclude Include="Source\animation.h" />
     <ClInclude Include="Source\Axis.h" />
     <ClInclude Include="Source\BootScene.h" />
     <ClInclude Include="Source\Camera.h" />
+    <ClInclude Include="Source\Goblin.h" />
     <ClInclude Include="Source\Player.h" />
     <ClInclude Include="Source\Screen.h" />
     <ClInclude Include="Source\DebugScreen.h" />
@@ -178,10 +180,12 @@
     <ClCompile Include="Library\SceneBase.cpp" />
     <ClCompile Include="Library\SceneManager.cpp" />
     <ClCompile Include="Library\Time.cpp" />
+    <ClCompile Include="Source\animation.cpp" />
     <ClCompile Include="Source\Axis.cpp" />
     <ClCompile Include="Source\BootScene.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\DebugScreen.cpp" />
+    <ClCompile Include="Source\Goblin.cpp" />
     <ClCompile Include="Source\Player.cpp" />
     <ClCompile Include="Source\PlayScene.cpp" />
     <ClCompile Include="Source\SceneFactory.cpp" />

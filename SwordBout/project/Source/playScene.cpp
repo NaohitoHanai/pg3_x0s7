@@ -5,6 +5,7 @@
 #include "Screen.h"
 #include "../Library/Time.h"
 #include "Player.h"
+#include "Goblin.h"
 #include "Camera.h"
 #include "Axis.h"
 #include "Stage.h"
@@ -13,6 +14,7 @@ PlayScene::PlayScene()
 {
 	Instantiate<Axis>();
 	Instantiate<Player>();
+	Instantiate<Goblin>();
 	Instantiate<Camera>();
 	Instantiate<Stage>();
 }

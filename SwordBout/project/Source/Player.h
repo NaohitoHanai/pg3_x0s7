@@ -1,5 +1,6 @@
 #pragma once
 #include "../Library/GameObject.h"
+#include "animation.h"
 
 class Player : public GameObject
 {
@@ -17,4 +18,19 @@ private:
 	bool landing;
 
 	bool CheckJumpKey();
+	bool CheckAttackKey();
+
+	Animation* animation;
+	enum ANIM_ID{
+		STAND = 0,
+		RUN,
+		ATTACK1,
+		ATTACK2,
+		ATTACK3,
+		// í«â¡Ç∑ÇÈÇ»ÇÁÇ±Ç±Ç≈
+		MAX
+	};
+	int hAnim[MAX];
+
+	int attacking; // 0:çUåÇÇµÇƒÇ»Ç¢ÅA1Å`3:çUåÇíÜ
 };

@@ -13,6 +13,23 @@ Player::Player()
 	rotation = VGet(0, 0, 0);
 	jumpVelocity = VGet(0, 0, 0);
 	landing = true;
+
+	animation = new Animation();
+	animation->SetModel(hModel);
+
+	std::string folder = "data/Character/Player/"; // C++の文字列
+	const std::string FileName[] = {
+		"Anim_Neutral.mv1",
+		"Anim_Run.mv1",
+		"Anim_Attack1.mv1",
+		"Anim_Attack2.mv1",
+		"Anim_Attack3.mv1",
+	};
+	for (int i = 0; i < MAX; i++) {
+		hAnim[i] = MV1LoadModel((folder + FileName[i]).c_str());
+	}
+
+	animation->Play(hAnim[0], true);
 }
 
 Player::~Player()
@@ -34,18 +51,44 @@ void Player::Start()
 
 void Player::Update()
 {
-	if (CheckHitKey(KEY_INPUT_D)) {
-		// 右旋回
-		rotation.y += 6.0 * DX_PI / 180.0f;
+	animation->Update();
+
+	if (attacking == 0) {
+		if (CheckHitKey(KEY_INPUT_D)) {
+			// 右旋回
+			rotation.y += 6.0 * DX_PI / 180.0f;
+		}
+		if (CheckHitKey(KEY_INPUT_A)) {
+			// 左旋回
+			rotation.y -= 6.0 * DX_PI / 180.0f;
+		}
+		if (CheckHitKey(KEY_INPUT_W)) {
+			animation->Play(hAnim[RUN], true);
+			// 向いてるほうへ進む
+			MATRIX rotY = MGetRotY(rotation.y);
+			position += VGet(0, 0, 5.0f) * rotY;
+		}
+		else {
+			animation->Play(hAnim[STAND], true);
+		}
 	}
-	if (CheckHitKey(KEY_INPUT_A)) {
-		// 左旋回
-		rotation.y -= 6.0 * DX_PI / 180.0f;
+	if (CheckAttackKey()) {
+		if (attacking == 0) {
+			animation->Play(hAnim[ATTACK1], false);
+			attacking = 1;
+		} else if (attacking == 1 && animation->GetCurrentFrame() >= 8.5f) {
+			animation->Play(hAnim[ATTACK2], false);
+			attacking = 2;
+		} else if (attacking == 2 && animation->GetCurrentFrame() >= 9.5f) {
+			animation->Play(hAnim[ATTACK3], false);
+			attacking = 3;
+		}
 	}
-	if (CheckHitKey(KEY_INPUT_W)) {
-		// 向いてるほうへ進む
-		MATRIX rotY = MGetRotY(rotation.y);
-		position += VGet(0, 0, 5.0f) * rotY;
+	if (attacking > 0) {
+		if (animation->IsEnd()) { // 今のアニメーションが終わったらtrue
+			attacking = 0; // 攻撃停止
+			animation->Play(hAnim[STAND], true);
+		}
 	}
 	if (CheckJumpKey()) {
 		if (landing) {
@@ -110,6 +153,16 @@ bool Player::CheckJumpKey()
 	static bool lastKey;
 
 	bool current = (CheckHitKey(KEY_INPUT_SPACE) != 0);
+	bool ret = current && !lastKey;
+	lastKey = current;
+	return ret;
+}
+
+bool Player::CheckAttackKey()
+{
+	static bool lastKey;
+
+	bool current = (CheckHitKey(KEY_INPUT_M) != 0);
 	bool ret = current && !lastKey;
 	lastKey = current;
 	return ret;

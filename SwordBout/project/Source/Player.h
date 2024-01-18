@@ -12,6 +12,8 @@ public:
 	void Draw() override;
 private:
 	int hModel;
+	int hSabel; // サーベルのモデル
+
 	VECTOR position;
 	VECTOR rotation;
 	VECTOR jumpVelocity; // ジャンプベクトル
@@ -33,4 +35,6 @@ private:
 	int hAnim[MAX];
 
 	int attacking; // 0:攻撃してない、1～3:攻撃中
+	VECTOR attackLine[2]; // 攻撃座標
+	VECTOR beforeLine[2]; // 前回の座標
 };

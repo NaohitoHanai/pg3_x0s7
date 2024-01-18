@@ -2,10 +2,13 @@
 #include "Camera.h"
 #include "Stage.h"
 #include "../Library/Time.h"
+#include "Goblin.h"
 
 Player::Player()
 {
 	hModel = MV1LoadModel("data/Character/Player/PC.mv1");
+	hSabel = MV1LoadModel("data/Character/Player/Sabel.mv1");
+
 	int root = MV1SearchFrame(hModel, "root");
 	MV1SetFrameUserLocalMatrix(hModel, root,
 		MGetRotY(DX_PI_F));
@@ -73,15 +76,36 @@ void Player::Update()
 		}
 	}
 	if (CheckAttackKey()) {
+		bool adjust = false;
 		if (attacking == 0) {
 			animation->Play(hAnim[ATTACK1], false);
 			attacking = 1;
+			adjust = true;
 		} else if (attacking == 1 && animation->GetCurrentFrame() >= 8.5f) {
 			animation->Play(hAnim[ATTACK2], false);
 			attacking = 2;
+			adjust = true;
 		} else if (attacking == 2 && animation->GetCurrentFrame() >= 9.5f) {
 			animation->Play(hAnim[ATTACK3], false);
 			attacking = 3;
+			adjust = true;
+		}
+		if (adjust) {
+			Goblin* goblin = ObjectManager::FindGameObject<Goblin>();
+			// 1.5m以内にいる
+			VECTOR d = goblin->Position() - position;
+			d.y = 0.0f;
+			if (VSize(d) < 300.0f) {
+				VECTOR a_v = VNorm(d);
+				VECTOR b_v = VGet(0, 0, 1) * MGetRotY(rotation.y);
+				float ip = VDot(a_v, b_v);
+				if (ip > cos(DegToRad(30.0f))) { // 視野内
+					if (VSize(d) > 50.0f) {
+						position += VNorm(d) * 50.0f;
+					}
+					rotation.y = atan2(d.x, d.z);
+				}
+			}
 		}
 	}
 	if (attacking > 0) {
@@ -139,6 +163,21 @@ void Player::Update()
 	//trans = VGet(0, 0, 0) * m;/* mの中の移動部分だけ取り出す */
 	//MV1SetFrameUserLocalMatrix(hModel, kneeL,
 	//	MGetRotX(-DX_PI / 2.0f)* MGetTranslate(trans));
+
+	// 攻撃の当たり判定
+	if (attacking>0) {
+		Goblin* goblin = ObjectManager::FindGameObject<Goblin>();
+		if (goblin != nullptr) {
+			if (!goblin->AttackLine(attackLine[0], attackLine[1], position)) {
+				VECTOR a = (attackLine[0] + beforeLine[0]) / 2;
+				VECTOR b = (attackLine[1] + beforeLine[1]) / 2;
+				// 中間の線でも当たり判定
+				goblin->AttackLine(a, b, position);
+			}
+		}
+		beforeLine[0] = attackLine[0];
+		beforeLine[1] = attackLine[1];
+	}
 }
 
 void Player::Draw()
@@ -146,6 +185,17 @@ void Player::Draw()
 	MV1SetPosition(hModel, position);
 	MV1SetRotationXYZ(hModel, rotation);
 	MV1DrawModel(hModel);
+
+	int wp = MV1SearchFrame(hModel, "wp");
+	MATRIX m = MV1GetFrameLocalWorldMatrix(hModel, wp);
+	MV1SetMatrix(hSabel, m);
+	MV1DrawModel(hSabel);
+
+	VECTOR p1 = VGet(0, 0, 0) * m; // サーベルの根本
+	VECTOR p2 = VGet(0, -300, 0) * m; // サーベルの剣先
+	DrawLine3D(p1, p2, GetColor(255, 0,0));
+	attackLine[0] = p1;
+	attackLine[1] = p2;
 }
 
 bool Player::CheckJumpKey()

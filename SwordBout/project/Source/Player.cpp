@@ -75,6 +75,9 @@ void Player::Update()
 			animation->Play(hAnim[STAND], true);
 		}
 	}
+	else {
+		adjustProc.Update(&position);
+	}
 	if (CheckAttackKey()) {
 		bool adjust = false;
 		if (attacking == 0) {
@@ -101,7 +104,9 @@ void Player::Update()
 				float ip = VDot(a_v, b_v);
 				if (ip > cos(DegToRad(30.0f))) { // ‹–ì“à
 					if (VSize(d) > 50.0f) {
-						position += VNorm(d) * 50.0f;
+						adjustProc.Start(
+							position + VNorm(d) * 50.0f, 6.0f);
+//						position += VNorm(d) * 50.0f;
 					}
 					rotation.y = atan2(d.x, d.z);
 				}
@@ -216,4 +221,38 @@ bool Player::CheckAttackKey()
 	bool ret = current && !lastKey;
 	lastKey = current;
 	return ret;
+}
+
+Player::Adjust::Adjust()
+{
+	maxFrame = 0.0f;
+	currentFrame = 0.0f;
+}
+
+Player::Adjust::~Adjust()
+{
+}
+
+void Player::Adjust::Start(VECTOR target, float frame)
+{
+	targetPosition = target;
+	maxFrame = frame;
+	// Å‰‚É‚â‚ç‚È‚¯‚ê‚Î‚È‚ç‚È‚¢‚±‚Æ
+	currentFrame = 0.0f;
+}
+
+void Player::Adjust::Update(VECTOR* position)
+{
+	if (currentFrame >= maxFrame) {
+		return;
+	}
+	// ‚±‚±‚©‚çì‚é
+	currentFrame += 1.0f; // ƒtƒŒ[ƒ€‚ğ”‚¦‚é
+	float remainFrame = maxFrame - currentFrame;
+	if (remainFrame <= 0.0f) {
+		*position = targetPosition;
+	}
+	else {
+		*position += (targetPosition - *position) / remainFrame;
+	}
 }

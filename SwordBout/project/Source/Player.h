@@ -37,4 +37,18 @@ private:
 	int attacking; // 0:UŒ‚‚µ‚Ä‚È‚¢A1`3:UŒ‚’†
 	VECTOR attackLine[2]; // UŒ‚À•W
 	VECTOR beforeLine[2]; // ‘O‰ñ‚ÌÀ•W
+
+
+	class Adjust {
+	public:
+		Adjust();
+		~Adjust();
+		void Start(VECTOR target, float frame);
+		void Update(VECTOR* position);
+	private:
+		VECTOR targetPosition;
+		float maxFrame;
+		float currentFrame;
+	};
+	Adjust adjustProc;
 };

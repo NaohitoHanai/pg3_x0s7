@@ -1,6 +1,7 @@
 #pragma once
 #include "../Library/GameObject.h"
 #include "animation.h"
+class Goblin;
 
 class Player : public GameObject
 {
@@ -10,6 +11,9 @@ public:
 	void Start() override;
 	void Update() override;
 	void Draw() override;
+
+	void SetPosition(VECTOR pos, float yrot);
+
 private:
 	int hModel;
 	int hSabel; // サーベルのモデル
@@ -51,4 +55,6 @@ private:
 		float currentFrame;
 	};
 	Adjust adjustProc;
+
+	Goblin* FindNearest(float maxDist, float angle);
 };

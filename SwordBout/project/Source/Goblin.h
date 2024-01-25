@@ -12,6 +12,8 @@ public:
 
 	bool AttackLine(VECTOR p1, VECTOR p2, VECTOR pPos);
 
+	void SetPositionAngle(VECTOR pos, float yrot);
+
 	VECTOR Position() {
 		return position;
 	}

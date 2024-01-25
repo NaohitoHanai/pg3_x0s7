@@ -94,21 +94,23 @@ void Player::Update()
 			adjust = true;
 		}
 		if (adjust) {
-			Goblin* goblin = ObjectManager::FindGameObject<Goblin>();
-			// 1.5mˆÈ“à‚É‚¢‚é
-			VECTOR d = goblin->Position() - position;
-			d.y = 0.0f;
-			if (VSize(d) < 300.0f) {
-				VECTOR a_v = VNorm(d);
-				VECTOR b_v = VGet(0, 0, 1) * MGetRotY(rotation.y);
-				float ip = VDot(a_v, b_v);
-				if (ip > cos(DegToRad(30.0f))) { // Ž‹–ì“à
-					if (VSize(d) > 50.0f) {
-						adjustProc.Start(
-							position + VNorm(d) * 50.0f, 6.0f);
-//						position += VNorm(d) * 50.0f;
+			Goblin* goblin = FindNearest(300.0f, 30.0f);
+			if (goblin != nullptr) {
+				// ˆê”Ô‹ß‚¢‚Ì‚ðgoblin‚É“ü‚ê‚é
+				VECTOR d = goblin->Position() - position;
+				d.y = 0.0f;
+				if (VSize(d) < 300.0f) {
+					VECTOR a_v = VNorm(d);
+					VECTOR b_v = VGet(0, 0, 1) * MGetRotY(rotation.y);
+					float ip = VDot(a_v, b_v);
+					if (ip > cos(DegToRad(30.0f))) { // Ž‹–ì“à
+						if (VSize(d) > 50.0f) {
+							adjustProc.Start(
+								position + VNorm(d) * 50.0f, 6.0f);
+							//						position += VNorm(d) * 50.0f;
+						}
+						rotation.y = atan2(d.x, d.z);
 					}
-					rotation.y = atan2(d.x, d.z);
 				}
 			}
 		}
@@ -171,8 +173,8 @@ void Player::Update()
 
 	// UŒ‚‚Ì“–‚½‚è”»’è
 	if (attacking>0) {
-		Goblin* goblin = ObjectManager::FindGameObject<Goblin>();
-		if (goblin != nullptr) {
+		std::list<Goblin*> goblins = ObjectManager::FindGameObjects<Goblin>();
+		for ( Goblin* goblin : goblins) { 
 			if (!goblin->AttackLine(attackLine[0], attackLine[1], position)) {
 				VECTOR a = (attackLine[0] + beforeLine[0]) / 2;
 				VECTOR b = (attackLine[1] + beforeLine[1]) / 2;
@@ -203,6 +205,12 @@ void Player::Draw()
 	attackLine[1] = p2;
 }
 
+void Player::SetPosition(VECTOR pos, float yrot)
+{
+	position = pos;
+	rotation = VGet(0, yrot, 0);
+}
+
 bool Player::CheckJumpKey()
 {
 	static bool lastKey;
@@ -221,6 +229,29 @@ bool Player::CheckAttackKey()
 	bool ret = current && !lastKey;
 	lastKey = current;
 	return ret;
+}
+
+Goblin* Player::FindNearest(float maxDist, float angle)
+{
+	// ˆê”Ô‹ß‚¢‚à‚Ì‚ð•Ô‚·
+	std::list<Goblin*> goblins = ObjectManager::FindGameObjects<Goblin>();
+	float minFar = maxDist;
+	Goblin* nearest = nullptr;
+	VECTOR pforward = VGet(0, 0, 1) * MGetRotY(rotation.y);
+	for (Goblin* goblin : goblins) {
+		// Ž‹–ì‚ÌŠO‚ð‚Í‚¶‚­
+		VECTOR diff = goblin->Position() - position;
+		float dist = VSize(diff);
+		diff = VNorm(diff);
+		if (VDot(diff, pforward) < cos(DegToRad(30.0f))) {
+			continue;
+		}
+		if (dist < minFar) {
+			minFar = dist;
+			nearest = goblin;
+		}
+	}
+	return nearest;
 }
 
 Player::Adjust::Adjust()

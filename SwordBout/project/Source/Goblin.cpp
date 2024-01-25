@@ -51,3 +51,9 @@ bool Goblin::AttackLine(VECTOR p1, VECTOR p2, VECTOR pPos)
 	}
 	return result.HitFlag;
 }
+
+void Goblin::SetPositionAngle(VECTOR pos, float yrot)
+{
+	position = pos;
+	rotation = VGet(0, yrot, 0);
+}

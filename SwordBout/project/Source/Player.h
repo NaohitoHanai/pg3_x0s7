@@ -13,6 +13,9 @@ public:
 	void Draw() override;
 
 	void SetPosition(VECTOR pos, float yrot);
+	const VECTOR& Position() {
+		return position;
+	}
 
 private:
 	int hModel;
